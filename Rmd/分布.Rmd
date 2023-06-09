@@ -261,6 +261,157 @@ animate(animation)
 
 ```
 
+# 極値分布
+応用例：例えば、各分布に従いそうなデータの極値を集めて、それらが従うであろう極地分布を最尤推定し、結果をモデリングに活用できる。
+
+$$
+指数分布・正規分布→Gumbel分布に収束\\
+f(x ; \alpha, \beta)=\frac{1}{\beta} \exp \left(-\exp \left(\frac{x-\alpha}{\beta}\right)+\frac{x-\alpha}{\beta}\right), F(x ; \alpha, \beta)=\exp \left(-\exp \left(-\frac{x-\alpha}{\beta}\right)\right)
+$$
+
+## 正規分布の場合
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# シード値の設定（再現性のため）
+set.seed(123)
+
+# 最大値を保存するためのベクトル
+max_values <- numeric(1000)
+
+# 操作を1000回繰り返す
+for (i in 1:1000) {
+ # サイコロを3回降って最大値を取得
+ max_values[i] <- max(rnorm(3))
+}
+
+# 最大値の平均を計算
+mean_max <- mean(max_values)
+
+# ビンの幅
+bin_width <- 1
+
+# ヒストグラムとカーネル密度推定のプロット
+hist(max_values, freq = FALSE,
+     main = "Maximum Value Histogram", xlab = "Maximum Value")
+
+# 最大値の平均を表示
+cat("Mean of maximum values:", mean_max, "\n")
+
+```
+
+## 指数分布の場合
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# シード値の設定（再現性のため）
+set.seed(123)
+
+# 最大値を保存するためのベクトル
+max_values <- numeric(1000)
+
+# 操作を1000回繰り返す
+for (i in 1:1000) {
+ # サイコロを3回降って最大値を取得
+ max_values[i] <- max(rexp(3))
+}
+
+# 最大値の平均を計算
+mean_max <- mean(max_values)
+
+# ビンの幅
+bin_width <- 1
+
+# ヒストグラムとカーネル密度推定のプロット
+hist(max_values, freq = FALSE,
+     main = "Maximum Value Histogram", xlab = "Maximum Value")
+
+# 最大値の平均を表示
+cat("Mean of maximum values:", mean_max, "\n")
+
+
+```
+
+$$
+コーシー分布→Fréchet 分布\\
+f(x ; \alpha)=\alpha x^{-\alpha-1} \exp \left(-x^{-\alpha}\right), F(x ; \alpha)=\exp \left(-x^{-\alpha}\right)
+$$
+
+## コーシー分布の場合
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# シード値の設定（再現性のため）
+set.seed(123)
+
+# 最大値を保存するためのベクトル
+max_values <- numeric(100)
+
+# 操作を1000回繰り返す
+for (i in 1:100) {
+ # サイコロを3回降って最大値を取得
+ max_values[i] <- max(rcauchy(3))
+}
+
+# 最大値の平均を計算
+mean_max <- mean(max_values)
+
+# ビンの幅
+bin_width <- 1
+
+# ヒストグラムとカーネル密度推定のプロット
+hist(max_values, freq = FALSE,
+     main = "Maximum Value Histogram", xlab = "Maximum Value")
+
+# 最大値の平均を表示
+cat("Mean of maximum values:", mean_max, "\n")
+```
+
+$$
+一様分布→負のWeibull 分布\\
+f(x ; \alpha, \beta)=\frac{\alpha}{\beta^\alpha} x^{\alpha-1} \exp \left(-\left(\frac{x}{\beta}\right)^\alpha\right), F(x ; \alpha, \beta)=1-\exp \left(-\left(\frac{x}{\beta}\right)^\alpha\right)
+$$
+
+## 一様分布の場合
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# シード値の設定（再現性のため）
+set.seed(123)
+
+# 最大値を保存するためのベクトル
+max_values <- numeric(1000)
+
+# 操作を1000回繰り返す
+for (i in 1:1000) {
+ # サイコロを3回降って最大値を取得
+ max_values[i] <- max(sample(1:6, 3, replace = TRUE))
+}
+
+# 最大値の平均を計算
+mean_max <- mean(max_values)
+
+# ビンの幅
+bin_width <- 1
+
+# ヒストグラムとカーネル密度推定のプロット
+hist(max_values, breaks = seq(0.5, max(max_values)+0.5, by = bin_width), freq = FALSE,
+     main = "Maximum Value Histogram", xlab = "Maximum Value")
+
+# 最大値の平均を表示
+cat("Mean of maximum values:", mean_max, "\n")
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ロジスティック分布
 
