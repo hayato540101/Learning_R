@@ -1,0 +1,431 @@
+---
+title: "Animation of Major Probability Distributions"
+author: "TH"
+output:
+  html_document:
+    theme: darkly
+    toc: true
+    number_sections: true
+---
+
+```{r}
+library(ggplot2)
+library(gganimate)
+library(actuar)
+```
+# Normal-mu
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# パラメータの範囲とステップ数
+mu_min <- 1
+mu_max <- 15
+mu_step <- 0.5
+sigma <- 1
+
+# データフレームの初期化
+df <- data.frame()
+
+# パラメータごとに正規分布を生成し、データフレームに追加する
+for (mu in seq(mu_min, mu_max, mu_step)) {
+ sample_data <- rnorm(50, mean = mu, sd = sigma)
+ df <- rbind(df, data.frame(x = sample_data, mu = mu))
+}
+
+# アニメーションの作成
+p <- ggplot(df, aes(x, fill = factor(mu))) +
+# p <- ggplot(df, aes(x)) +
+ geom_histogram(binwidth = 1, color = "black") +
+ labs(title = "Normal Distribution", x = "Value", y = "Frequency") +
+ theme_minimal() +
+ transition_states(mu, transition_length = 0.1, state_length = 0.1) +
+ ease_aes('linear')
+
+# アニメーションの再生
+animate(p, nframes = 100, fps = 20)
+
+########## Normal-sigma ##########
+
+# パラメータの範囲とステップ数
+sigma_min <- 1
+sigma_max <- 10
+sigma_step <- 0.5
+mu <- 1
+
+# データフレームの初期化
+df <- data.frame()
+
+# パラメータごとに正規分布を生成し、データフレームに追加する
+for (sigma in seq(sigma_min, sigma_max, sigma_step)) {
+ sample_data <- rnorm(50, mean = mu, sd = sigma)
+ df <- rbind(df, data.frame(x = sample_data, sigma = sigma))
+}
+
+# アニメーションの作成
+p <- ggplot(df, aes(x, fill = factor(sigma))) +
+# p <- ggplot(df, aes(x)) +
+ geom_histogram(binwidth = 1, color = "black") +
+ labs(title = "Normal Distribution", x = "Value", y = "Frequency") +
+ theme_minimal() +
+ transition_states(sigma, transition_length = 0.1, state_length = 0.1) +
+ ease_aes('linear')
+
+# アニメーションの再生
+animate(p, nframes = 100, fps = 20)
+
+```
+
+# Poisson
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# パラメータの範囲とステップ数
+lambda_min <- 1
+lambda_max <- 10
+lambda_step <- 0.5
+
+
+# データフレームの初期化
+df <- data.frame()
+
+# パラメータごとにポアソン分布を生成し、データフレームに追加する
+for (lambda in seq(lambda_min, lambda_max, lambda_step)) {
+ sample_data <- rpois(100, lambda)
+ df <- rbind(df, data.frame(x = sample_data, lambda = lambda))
+}
+
+# アニメーションの作成
+p <- ggplot(df, aes(x, fill = factor(x))) +
+ geom_histogram(binwidth = 1, color = "black") +
+ labs(title = "Poisson Distribution", x = "Value", y = "Frequency") +
+ theme_minimal() +
+ transition_states(lambda, transition_length = 0.01, state_length = 0.1) +
+ ease_aes('linear')
+
+# アニメーションの再生
+animate(p, nframes = 100, fps = 20)
+```
+
+# 指数分布
+
+$$
+f(x)=θexp(-θx) \quad(θ>0,x≧0)\\
+E(X)=1/θ\\
+V(X)=1/θ^2
+$$
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+library(ggplot2)
+library(gganimate)
+
+# パラメータの範囲とステップ数
+lambda_min <- 1
+lambda_max <- 5
+lambda_step <- 1
+
+# データフレームの初期化
+df <- data.frame()
+
+# パラメータごとに指数分布を生成し、データフレームに追加する
+for (lambda in seq(lambda_min, lambda_max, lambda_step)) {
+ sample_data <- rexp(200, rate = lambda)
+ df <- rbind(df, data.frame(x = sample_data, lambda = lambda))
+}
+
+# アニメーションの作成
+p <-
+ggplot(df, aes(x, fill = factor(lambda))) +
+ geom_histogram(binwidth = 0.1, color = "black") +
+ labs(title = "Exponential Distribution", x = "Value", y = "Frequency") +
+ theme_minimal() +
+ transition_states(lambda, transition_length = 0.1, state_length = 0.1) +
+ ease_aes('linear')
+
+# アニメーションの再生
+animate(p, nframes = 50, fps = 20)
+
+```
+
+
+# gumbel-alpha（位置パラメータ）
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# ガンベル分布の位置パラメータを指定
+scale <- 2
+alpha_min <- 1
+alpha_max <- 5
+alpha_step <- 0.5
+
+x <- seq(-5, 20, 0.5)
+# データフレームの初期化
+df <- data.frame()
+
+# パラメータごとにガンベル分布を生成し、データフレームに追加する
+for (alpha in seq(alpha_min, alpha_max, alpha_step)) {
+ density <- dgumbel(x, alpha, scale)
+ df <- rbind(df, data.frame(x = x, density = density, alpha = alpha))
+}
+
+# 縦線を引く位置のデータフレームを作成
+vline_df <- data.frame(xintercept = alpha_min:alpha_max)
+
+# ガンベル分布と縦線を重ねて描画
+p <- ggplot(df, aes(x, y = density, color = factor(alpha))) +
+ geom_line() +
+ labs(title = "Gumbel Distribution", x = "Value", y = "Density") +
+ theme_minimal() +
+ geom_vline(data = vline_df, aes(xintercept = xintercept),
+            linetype = "dashed", color = "black")
+
+p
+
+
+```
+
+# ワイブル（形状パラメータ）
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# パラメータの設定
+scale <- 1   # 尺度パラメータ
+
+# 形状パラメータの範囲とステップ数
+shape_min <- 0.5
+shape_max <- 5
+shape_step <- 0.5
+
+# データフレームの初期化
+df <- data.frame()
+x <- seq(0, 10, 0.1)
+
+# 形状パラメータを変化させながらデータを生成し、データフレームに追加
+for (shape in seq(shape_min, shape_max, shape_step)) {
+ density <- dweibull(x, shape = shape, scale = scale)
+ df <- rbind(df, data.frame(x = x, density = density, shape = shape))
+}
+
+# ggplotオブジェクトを作成
+p <- ggplot(df, aes(x, density, color = shape)) +
+ geom_line() +
+ labs(title = "Weibull Distribution Animation", x = "x", y = "Density") +
+ theme_minimal()
+
+# アニメーションの作成
+animation <- p +
+ transition_states(shape, transition_length = 1, state_length = 0.5) +
+ enter_fade() +
+ exit_fade()
+
+# アニメーションの表示
+animate(animation)
+
+
+```
+
+# ワイブル（尺度パラメータ）
+
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# パラメータの設定
+shape <- 2   # 形状パラメータ
+
+# 尺度パラメータの範囲とステップ数
+scale_min <- 0.5
+scale_max <- 5
+scale_step <- 0.5
+
+# データフレームの初期化
+df <- data.frame()
+x <- seq(0, 10, 0.1)
+
+# 尺度パラメータを変化させながらデータを生成し、データフレームに追加
+for (scale in seq(scale_min, scale_max, scale_step)) {
+ density <- dweibull(x, shape = shape, scale = scale)
+ df <- rbind(df, data.frame(x = x, density = density, scale = scale))
+}
+
+# ggplotオブジェクトを作成
+p <- ggplot(df, aes(x, density, color = scale)) +
+ geom_line() +
+ labs(title = "Weibull Distribution Animation", x = "x", y = "Density") +
+ theme_minimal()
+
+# アニメーションの作成
+animation <- p +
+ transition_states(scale, transition_length = 1, state_length = 0.5) +
+ enter_fade() +
+ exit_fade()
+
+# アニメーションの表示
+animate(animation)
+
+```
+
+
+# ロジスティック分布
+
+$$
+f(x) = \frac{e^{-(x-\mu)/s}}{s(1+e^{-(x-\mu)/s})^2}
+$$
+
+
+
+
+# ロジスティック分布 mu=0,s=1
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 確率密度関数を定義
+logistic_pdf <- function(x, mu, s) {
+ exp(-(x - mu) / s) / (s * (1 + exp(-(x - mu) / s))^2)
+}
+x <- seq(-10, 10, length.out = 100)
+mu <- 0
+s <- 1
+y <- logistic_pdf(x, mu, s)
+df = data.frame(x=x,y=y)
+
+# プロットを作成
+ggplot(df, aes(x, y,color = factor(mu))) +
+ geom_line() +
+ labs(x = "x", y = "Density", title = "Logistic Distribution PDF")
+
+```
+
+# ロジスティック分布 期待値
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 確率密度関数を定義 
+logistic_pdf <- function(x, mu, s) {
+ exp(-(x - mu) / s) / (s * (1 + exp(-(x - mu) / s))^2)
+}
+
+x <- seq(-10, 10, length.out = 100)
+s <- 1   # スケールパラメータ
+
+# muを0から5まで変化させながら確率密度関数の値を計算
+df <- data.frame()
+for (mu in seq(0, 5, 0.5)) {
+ y <- logistic_pdf(x, mu, s)
+ df <- rbind(df, data.frame(x, y, mu))
+}
+
+# プロットを作成
+p <- ggplot(df, aes(x, y,color = factor(mu))) +
+ geom_line() +
+ labs(x = "x", y = "Density", title = "Logistic Distribution PDF") +
+ transition_states(mu, transition_length = 0.2, state_length = 0.2)
+
+# アニメーションを表示
+animate(p, nframes = 100, fps = 10)
+```
+
+
+# ロジスティック分布 分散
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 確率密度関数を定義
+logistic_pdf <- function(x, mu, s) {
+ exp(-(x - mu) / s) / (s * (1 + exp(-(x - mu) / s))^2)
+}
+x <- seq(-10, 10, length.out = 100)
+mu <- 1   # 位置パラメータ
+
+# muを0から5まで変化させながら確率密度関数の値を計算
+df <- data.frame()
+for (s in seq(0.5, 5, 0.5)) {
+ y <- logistic_pdf(x, mu, s)
+ df <- rbind(df, data.frame(x, y, s))
+}
+
+# プロットを作成
+p <- ggplot(df, aes(x, y, color = factor(s))) +
+ geom_line() +
+ labs(x = "x", y = "Density", title = "Logistic Distribution PDF") +
+ transition_states(s, transition_length = 0.2, state_length = 0.2)
+
+# アニメーションを表示
+animate(p, nframes = 100, fps = 10)
+```
+
+# 退化分布(確率分布)
+
+$$
+f\left(k ; k_0\right)= \begin{cases}1, & \text { if } k=k_0 \\ 0, & \text { if } k \neq k_0\end{cases}
+$$
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# https://ja.wikipedia.org/wiki/%E9%80%80%E5%8C%96%E5%88%86%E5%B8%83
+# 数学の分野における退化分布（たいかぶんぷ、英: degenerate distribution）とは、ただ一つの値のみを取る確率変数の確率分布のことを言う。
+
+k0 <- 5
+
+probability_function <- function(k) {
+ if (k == k0) {
+  return(1)
+ } else {
+  return(0)
+ }
+}
+
+k <- seq(0, 10, 0.01)
+density <- sapply(k,probability_function)
+plot(k, density, type="l")
+
+
+cumsum_density <- cumsum(density)
+plot(k, cumsum_density, type="l")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

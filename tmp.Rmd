@@ -1,0 +1,71 @@
+---
+title: "Animation of Major Probability Distributions"
+author: "TH"
+output:
+  html_document:
+    theme: darkly
+    toc: true
+    number_sections: true
+---
+
+```{r}
+library(ggplot2)
+library(gganimate)
+```
+
+
+
+# ロジスティック分布 期待値
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 確率密度関数を定義
+logistic_pdf <- function(x, mu, s) {
+ exp(-(x - mu) / s) / (s * (1 + exp(-(x - mu) / s))^2)
+}
+
+x <- seq(-10, 10, length.out = 100)
+s <- 1   # スケールパラメータ
+
+# muを0から5まで変化させながら確率密度関数の値を計算
+df <- data.frame()
+for (mu in seq(0, 5, 0.5)) {
+ y <- logistic_pdf(x, mu, s)
+ df <- rbind(df, data.frame(x, y, mu))
+}
+
+# プロットを作成
+p <- ggplot(df, aes(x, y,color = factor(mu))) +
+ geom_line() +
+ labs(x = "x", y = "Density", title = "Logistic Distribution PDF") +
+ transition_states(mu, transition_length = 0.2, state_length = 0.2)
+
+# アニメーションを表示
+animate(p, nframes = 100, fps = 10)
+```
+
+
+# ロジスティック分布 分散
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 確率密度関数を定義
+logistic_pdf <- function(x, mu, s) {
+ exp(-(x - mu) / s) / (s * (1 + exp(-(x - mu) / s))^2)
+}
+x <- seq(-10, 10, length.out = 100)
+mu <- 1   # 位置パラメータ
+
+# muを0から5まで変化させながら確率密度関数の値を計算
+df <- data.frame()
+for (s in seq(0.5, 5, 0.5)) {
+ y <- logistic_pdf(x, mu, s)
+ df <- rbind(df, data.frame(x, y, s))
+}
+
+# プロットを作成
+p <- ggplot(df, aes(x, y, color = factor(s))) +
+ geom_line() +
+ labs(x = "x", y = "Density", title = "Logistic Distribution PDF") +
+ transition_states(s, transition_length = 0.2, state_length = 0.2)
+
+# アニメーションを表示
+animate(p, nframes = 100, fps = 10)
+```
+

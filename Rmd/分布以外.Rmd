@@ -1,0 +1,357 @@
+---
+title: "Animation of Major Probability Distributions"
+author: "TH"
+output:
+  html_document:
+    theme: darkly
+    toc: true
+    number_sections: true
+---
+
+```{r}
+library(ggplot2)
+library(gganimate)
+```
+$$
+f(x) = \frac{e^{-(x-\mu)/s}}{s(1+e^{-(x-\mu)/s})^2}
+
+$$
+
+
+# 指数分布 f(x),F(x),S(x),h(x)
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# パラメータ λ を指定
+lambda <- 0.5
+
+# 確率密度関数を計算
+x <- seq(0, 10, by = 0.1)  # x軸の範囲を指定
+pdf_values <- dexp(x, rate = lambda)
+cdf_values <- pexp(x, rate = lambda)
+
+plot(NA, xlim = c(0, 10), ylim = c(0, 1), type = "n", ylab = "Density", xlab = "x", main = "Exponential Distribution")
+lines(x, pdf_values, col = "red")  # main = "f(x) 確率密度関数"
+lines(x, cdf_values, col = "blue")  # main = "F(x) 累積分布関数"
+lines(x, 1 - cdf_values, col = "green")  # main = "S(x) 生存関数"
+lines(x, pdf_values/(1 - cdf_values), col = "green")  # main = "h(x) ハザード関数"
+
+legend("topright", legend = c("f(x) 確率密度関数", "F(x) 累積分布関数", "S(x) 生存関数","h(x) ハザード関数"), col = c("red", "blue", "green"), lty = 1)
+```
+
+
+# ワイブル分布 shape = 0.5  f(x),F(x),S(x),h(x)
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+scale <- 1  # 尺度パラメータ
+shape <- 0.5  # 形状パラメータ
+
+# 確率密度関数を計算
+x <- seq(0, 10, by = 0.1)  # x軸の範囲を指定
+
+# 形状パラメータを変化させながらデータを生成し、データフレームに追加
+pdf_values <- dweibull(x, shape = shape, scale = scale)
+cdf_values <- pweibull(x, shape = shape, scale = scale)
+
+plot(NA, xlim = c(0, 10), ylim = c(0, 1), type = "n", ylab = "Density", xlab = "x", main = "weibull Distribution")
+lines(x, pdf_values, col = "red")  # main = "f(x) 確率密度関数"
+lines(x, cdf_values, col = "blue")  # main = "F(x) 累積分布関数"
+# -0.01は線が完全に重ならないようにするため
+lines(x, (1 - cdf_values)-0.01, col = "green")  # main = "S(x) 生存関数"
+lines(x, pdf_values/(1 - cdf_values), col = "purple")  # main = "h(x) ハザード関数"
+
+legend("topright", legend = c("f(x) 確率密度関数", "F(x) 累積分布関数", "S(x) 生存関数","h(x) ハザード関数"), col = c("red", "blue", "green","purple"), lty = 1)
+```
+
+# ワイブル分布 shape = 1  f(x),F(x),S(x),h(x)
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+scale <- 1  # 尺度パラメータ
+shape <- 1  # 形状パラメータ
+
+# 確率密度関数を計算
+x <- seq(0, 10, by = 0.1)  # x軸の範囲を指定
+
+# 形状パラメータを変化させながらデータを生成し、データフレームに追加
+pdf_values <- dweibull(x, shape = shape, scale = scale)
+cdf_values <- pweibull(x, shape = shape, scale = scale)
+
+plot(NA, xlim = c(0, 10), ylim = c(0, 1), type = "n", ylab = "Density", xlab = "x", main = "weibull Distribution")
+lines(x, pdf_values, col = "red")  # main = "f(x) 確率密度関数"
+lines(x, cdf_values, col = "blue")  # main = "F(x) 累積分布関数"
+# -0.01は線が完全に重ならないようにするため
+lines(x, (1 - cdf_values)-0.01, col = "green")  # main = "S(x) 生存関数"
+lines(x, pdf_values/(1 - cdf_values), col = "purple")  # main = "h(x) ハザード関数"
+
+legend("topright", legend = c("f(x) 確率密度関数", "F(x) 累積分布関数", "S(x) 生存関数","h(x) ハザード関数"), col = c("red", "blue", "green","purple"), lty = 1)
+```
+
+# ワイブル分布 shape = 1.5  f(x),F(x),S(x),h(x)
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+scale <- 1  # 尺度パラメータ
+shape <- 1.5  # 形状パラメータ
+
+# 確率密度関数を計算
+x <- seq(0, 10, by = 0.1)  # x軸の範囲を指定
+
+# 形状パラメータを変化させながらデータを生成し、データフレームに追加
+pdf_values <- dweibull(x, shape = shape, scale = scale)
+cdf_values <- pweibull(x, shape = shape, scale = scale)
+
+plot(NA, xlim = c(0, 10), ylim = c(0, 1), type = "n", ylab = "Density", xlab = "x", main = "weibull Distribution")
+lines(x, pdf_values, col = "red")  # main = "f(x) 確率密度関数"
+lines(x, cdf_values, col = "blue")  # main = "F(x) 累積分布関数"
+lines(x, (1 - cdf_values), col = "green")  # main = "S(x) 生存関数"
+lines(x, pdf_values/(1 - cdf_values), col = "purple")  # main = "h(x) ハザード関数"
+
+legend("topright", legend = c("f(x) 確率密度関数", "F(x) 累積分布関数", "S(x) 生存関数","h(x) ハザード関数"), col = c("red", "blue", "green","purple"), lty = 1)
+
+```
+
+
+
+
+
+
+<!-- 変数変換 -->
+
+# Boxcox変換
+参考
+https://data-everyday.com/stat_ml/boxcox-y/
+未消化
+https://smrmkt.hatenablog.jp/entry/2013/06/22/110555
+```{r, fig.height = 5, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+
+# サンプルデータの生成
+set.seed(0)
+
+vector <- seq(1, 100)
+
+lambda_seq <- seq(0, 1, by = 0.05)  # ラムダの範囲とステップを指定
+n <- length(lambda_seq)
+z_transformed <- matrix(0, nrow = length(vector), ncol = n)  # 変換結果を格納する行列
+
+# ラムダを変えながらBox-Cox変換を実行
+for (i in 1:n) {
+ if (lambda_seq[i] == 0) {
+  z_transformed[, i] <- log(vector)
+ } else {
+  z_transformed[, i] <- (vector^lambda_seq[i] - 1) / lambda_seq[i]
+ }
+}
+
+# 変換結果をデータフレームに変換
+df_transformed <- 
+ data.frame(value = c(z_transformed), 
+            lambda = rep(lambda_seq, each = length(vector)),
+            seq=rep(1:100, times = 21)
+            )
+
+# プロット
+ggplot(df_transformed, aes(x = seq, y = value, group = factor(lambda), color= factor(lambda))) +
+ geom_line() +
+ labs(x = "Lambda", y = "Transformed Value") +
+ ggtitle("Box-Cox Transformation with Varying Lambda")
+```
+
+
+
+
+# モンテカルロ法
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+
+n_in <- 0
+niter <- 500
+set.seed(Sys.time())
+
+results <- data.frame(x = numeric(niter), y = numeric(niter))
+
+for (iter in 1:niter) {
+ x <- runif(1)
+ y <- runif(1)
+ 
+ results[iter, ] <- c(x, y)
+}
+# 円のデータを作成
+circle_data <- data.frame(
+ x = cos(seq(0, 2 * pi, length.out = 500)),
+ y = sin(seq(0, 2 * pi, length.out = 500))
+)
+
+ggplot(results, aes(x = x, y = y)) +
+ xlim(0, max(results$x)) +
+ ylim(0, max(results$y)) +
+ geom_point() +
+ geom_point(data = circle_data, aes(x = x, y = y), color = "blue")
+```
+
+
+
+# メトロポリス法によるガウス分布からのサンプリング
+$$
+P(x)=\frac{e^{-\frac{x^2}{2}}}{\sqrt{2 \pi}}からのサンプリング
+$$
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 新しいグラフィックデバイスを作成する
+x<-seq(-5,5,0.1)
+y<-exp(-(x^2)/2)
+plot(x, y, type="l", lwd = 2)
+
+niter <- 10000  # 100サンプル採取する
+step_size <- 0.5e0  # ステップサイズは0.5とする
+set.seed(as.integer(Sys.time()))  # システムの現在時刻で乱数の種を設定
+
+# 初期値を設定
+x <- 0e0
+naccept <- 0  # 受理（アクセプト）回数のカウンター
+
+# 空のリストの作成
+my_list <- list()
+
+# 本番部分
+for (iter in 1:niter) {
+  backup_x <- x
+  action_init <- 0.5e0 * x * x
+  dx <- (runif(1) - 0.5e0) * step_size * 2e0
+  x <- x + dx
+  action_fin <- 0.5e0 * x * x
+  
+  # メトロポリステスト
+  metropolis <- runif(1)
+  
+  
+  if (exp(action_init - action_fin) > metropolis) {
+    # 受理
+    naccept <- naccept + 1
+  } else {
+    # 却下
+    x <- backup_x
+  }
+
+    # 値の追加
+  # my_list <- c(my_list,action_init)
+  my_list <- c(my_list,x)
+  
+  # 結果を出力
+  # cat(sprintf("Acceptance ratio: %.10f\n", (naccept / iter)))
+}
+
+my_list <- unlist(my_list)
+
+hist(my_list)
+```
+
+# メトロポリス法による多変量ガウス関数からのサンプリング
+$$
+\exp\left(-0.5 \cdot \left(x^2 + y^2 + x \cdot y\right)\right)
+$$
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 新しいグラフィックデバイスを作成する
+library(rgl)
+x <- seq(-10, 10, length.out = 100)
+y <- seq(-10, 10, length.out = 100)
+z <- outer(x, y, function(x, y) exp(-0.5 * (x^2 + y^2 + x * y)))
+
+
+
+# 3Dプロットを生成
+persp3d(x, y, z, col = "blue", alpha = 0.7, theta = 30, phi = 20,
+        xlab = "x", ylab = "y", zlab = "z", ticktype = "detailed",
+        box = TRUE, axes = TRUE, aspect = "iso")
+
+
+
+
+
+
+niter <- 100000  # 100サンプル採取する
+step_size <- 0.5  # ステップサイズは0.5とする
+set.seed(as.integer(Sys.time()))  # システムの現在時刻で乱数の種を設定
+
+# 初期値を設定
+x <- 0
+y <- 0
+naccept <- 0  # 受理（アクセプト）回数のカウンター
+
+# 空のリストの作成
+my_list <- list()
+
+# 本番部分
+for (iter in 1:niter) {
+ backup_x <- x
+ backup_y <- x
+ action_init <- 0.5 * (x**2 * y**2 * x*y)
+ 
+ dx <- (runif(1) - 0.5) * step_size * 2
+ dy <- (runif(1) - 0.5) * step_size * 2
+ x <- x + dx
+ y <- y + dy
+ 
+ action_fin <- 0.5 * (x**2 * y**2 * x*y)
+ 
+ # メトロポリステスト
+ metropolis <- runif(1)
+ 
+ 
+ if (exp(action_init - action_fin) > metropolis) {
+  # 受理
+  naccept <- naccept + 1
+ } else {
+  # 却下
+  x <- backup_x
+  y <- backup_y
+ }
+ 
+ # 値の追加
+ # my_list <- c(my_list,action_init)
+ if (iter%%10==0) {
+   my_list <- c(my_list,list(x,y))
+ }
+ 
+ # 結果を出力
+ # cat(sprintf("Acceptance ratio: %.10f\n", (naccept / iter)))
+}
+
+# my_list <- unlist(my_list)
+odd_elements <- my_list[seq(1, length(my_list), 2)]
+even_elements <- my_list[seq(2, length(my_list), 2)]
+
+
+plot(odd_elements,even_elements)
+```
+
+
+# Box–Muller's method
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+library(ggplot2)
+
+# ボックスミュラー法による擬似乱数生成関数
+box_muller <- function(n) {
+ # nは生成する乱数の数
+ u1 <- runif(n) # 0から1までの一様乱数を生成
+ u2 <- runif(n) # 0から1までの一様乱数を生成
+ 
+ # ボックスミュラー法による擬似乱数生成
+ z1 <- sqrt(-2 * log(u1)) * cos(2 * pi * u2)
+ z2 <- sqrt(-2 * log(u1)) * sin(2 * pi * u2)
+ 
+ # 生成した乱数を返す
+ return(list(z1, z2))
+}
+
+# テスト
+n <- 1000 # 生成する乱数の数
+random_numbers <- box_muller(n)
+z1 <- random_numbers[[1]]
+z2 <- random_numbers[[2]]
+
+# ヒストグラムを重ねて表示（透明度を調整）
+ggplot() +
+ geom_histogram(data = data.frame(z1), aes(x = z1, fill = "z1"), alpha = 0.7, binwidth = 0.2) +
+ geom_histogram(data = data.frame(z2), aes(x = z2, fill = "z2"), alpha = 0.7, binwidth = 0.2) +
+ labs(title = "Box-Muller Method", x = "Random Number") +
+ scale_fill_manual(values = c("z1" = "lightblue", "z2" = "lightgreen")) +
+ theme_minimal()
+```
