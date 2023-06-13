@@ -12,11 +12,15 @@ output:
 library(styler)
 style_file("C:/Users/thyt/Learning/Learning_R/Rmd/Rで学ぶ確率統計学 多変量統計編/なんでも.R")
 ```
+
 <!-- style_file("C:/Users/thyt/Learning/Learning_R/Rmd/Rで学ぶ確率統計学 多変量統計編/なんでも.R") -->
+
+- 目的：復習を兼ねてRmarkdownにまとめる
 
 # １章
 
 ## 適合度検定
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 nankai <- data.frame(month = 1:12, frequency=c(0,2,0,0,0,0,0,2,1,1,1,5))
 
@@ -39,6 +43,7 @@ m <- sum((0:8)*df$year_count)/sum(df$year_count)
 print(paste("最尤推定量λ:",m))
 
 ```
+
 $$事故回数を8回以上と解釈した場合(自由度8)の検定$$
 
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
@@ -46,7 +51,9 @@ poisprob<-dpois(0:7,lambda=m)
 theory<-c(poisprob,1-sum(poisprob))
 chisq.test(df$year_count,p=theory)
 ```
+
 $$9回以上の実現値を0と解釈した場合(自由度9)の検定$$
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 poisprob2<-dpois(0:8,lambda=m)
 theory2<-c(poisprob2,1-sum(poisprob2))
@@ -67,14 +74,12 @@ chisqval <- apply(z*z/expmatrix, 2, sum)
 hist(chisqval)
 ```
 
-
-
 # ２章 分割表の検定(2)
 
-- サマリ
- - chisq.test(df) # イエーツの補正あり
- - chisq.test(df,correct=FALSE)  # イエーツの補正なし
- - fisher.test(df)  # フィッシャーの正確検定
+-   メモ
+-   chisq.test(df) \# イエーツの補正あり
+-   chisq.test(df,correct=FALSE) \# イエーツの補正なし
+-   fisher.test(df) \# フィッシャーの正確検定
 
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 library(MASS)
@@ -85,6 +90,7 @@ chisq.test(SmokeEx)
 ```
 
 ### イエーツの補正有無でP値を比較
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 
 sb<-matrix(c(1085,703,55623,441239),2,2)
@@ -95,19 +101,24 @@ chisq.test(sb)
 ```
 
 ### 母比率の差の検定
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 prop.test(c(8,13),c(20,20))
 
 bluepen<-matrix(c(8,12,13,7),2,2)
 chisq.test(bluepen)
 ```
+
 ### フィッシャーの正確検定
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 fisher.test(bluepen)
 ```
+
 ### フィッシャーの正確検定の計算原理　SKIP
 
 ### 独立性の検定が役に立つ場合
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 mrecall<-matrix(c(14,17,6,2),2,2)
 
@@ -117,7 +128,13 @@ chisq.test(mrecall,correct=FALSE)  # イエーツの補正なし
 fisher.test(mrecall)
 
 ```
-### 残渣分析
+
+### 残差分析
+
+メモ
+
+-   χ二乗検定→有意→標準化残差の絶対値の上側累積確率のチェック
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 MF <- matrix(c(482, 532, 303, 390, 30, 38, 29, 62), 4, 2,
   dimnames = list(c("機械", "電気", "電子", "環境"), c("男性", "女性"))
@@ -125,50 +142,125 @@ MF <- matrix(c(482, 532, 303, 390, 30, 38, 29, 62), 4, 2,
 
 res <- chisq.test(MF)
 res$stdres
-
-
-
 ```
 
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# 正規分布の上側累積確率を計算
+p.value.matrix <- pnorm(abs(res$stdres),lower.tail=FALSE)*2
+
+round(p.value.matrix, 4)*100
+
 ```
+# ３章 単回帰
+
+### 近似直線の導出
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# speed(時速)、dist(停止までに走行する距離、ft)
+res<-lm(formula = dist~speed, data=cars)
+plot(cars)
+abline(res)
+
+summary(res)
+```
+
+### Rにおける決定係数
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+summary(res)
+
+# Call:
+# lm(formula = dist ~ speed, data = cars)
+# 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -29.069  -9.525  -2.272   9.215  43.201 
+# 
+# Coefficients:
+#             Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+# speed         3.9324     0.4155   9.464 1.49e-12 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 15.38 on 48 degrees of freedom
+# Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 
+# F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
+```
+
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+res<-lm(formula = dist~speed - 1, data=cars)
+plot(cars,xlim=c(0,25))
+abline(res)
+
+summary(res)
+```
+
+### Rにおける決定係数
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# sampledata2.xlsxのTIMSS2011シートのV列
+likemath <- read.csv("likemath.csv",header=FALSE)
+scoremath <- read.csv("scoremath.csv",header=FALSE)
+plot(likemath$V1,scoremath$V1)
+res<-lm(scoremath$V1~likemath$V1)
+abline(res)
+summary(res)  # y = 679.1611 -3.1604x
+
+# 平均点が上がるほど数学が嫌いになる。と考え説明変数と独立変数を入れ替えた場合：
+res2<-lm(likemath$V1~scoremath$V1)
+summary(res2)
+
+# summaryより、
+# x = 125.87889 - 0.12297y
+# ⇔ y = (125.87889-X)/0.12297 = 1023.655 - 8.132065X
+abline(a=1023.655,b=-8.132065,lty="dotted")
+# ↑で引かれた直線は横方向の残差平方和を最小化する
+```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
-```
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
-```
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
-```
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
-```
-$$$$
-$$$$
+
+

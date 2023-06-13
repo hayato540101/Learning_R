@@ -9,6 +9,7 @@ output:
 ---
 
 # 1章
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 # 1-1
 print(paste(556*(9/16),556*(3/16),556*(3/16),556*(1/16)))
@@ -50,7 +51,9 @@ curve(dchisq(x,df=2),add=TRUE)
 hist(B,prob=TRUE)
 curve(dchisq(x,df=3),add=TRUE)
 ```
+
 $参考：自由度11のχ二乗分布$
+
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 library(ggplot2)
 
@@ -64,7 +67,82 @@ ggplot(data, aes(x = x, y = y)) +
  ggtitle("Chi-squared Distribution (df = 11)")
 ```
 
+# 2章
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 2-1
+N <- c(48, 52, 59, 71, 64, 50, 35, 49)
+p <- c(1, 1, 1, 1, 1, 1, 1, 1) / 8
+
+# H_0:月の満ち欠けと出産数が独立であるという帰無仮説は棄却される
+res <- chisq.test(N, p = p)
+
+# 月相4-5が特異的に多く、7-8が特異的に少ない
+round(pnorm(abs(res$stdres), lower.tail = FALSE) * 2, 4)
+
+bp <- barplot(N, names.arg = c("1 to 2", "2 to 3", "3 to 4", "4 to 5", "5 to 6", "6 to 7", "7 to 8", "8 to 1"), xlab = "moon phase", ylab = "number of deliveries")
+# text(x=bp,y=N,labels = N,pos=3,xpd=NA)
+
+# 2-2
+# (1)
+pass.fail <- matrix(c(163, 218, 57, 48), 2, 2)
+# (2)
+res <- chisq.test(pass.fail)
+round(pnorm(abs(res$stdres), lower.tail = FALSE) * 2, 4)
+# →男子の方が合格しやすいと言える。
+
+# 2-3
+# H_0:サリドマイドと奇形の有無は関係がない
+thalidomide <- matrix(c(90,22,2,186), 2, 2)
+chisq.test(thalidomide, correct=FALSE)
+chisq.test(thalidomide)
+# →H_0:サリドマイドと奇形の有無は関係がないが棄却される
+
+# 2-4
+# H_0:ワクチン接種とインフルエンザの罹患には関係がない
+vaccination <- matrix(c(1,15,22,62), 2, 2,
+                      dimnames = list(c("接種あり", "接種なし"), c("罹患", "罹患でない")))
+
+print(vaccination)
+
+chisq.test(vaccination, correct=FALSE)
+chisq.test(vaccination)
+# →イエーツの補正をした場合でも、しない場合でも有意水準5%で有意にはならない。H_0は棄却されない。よってワクチン接種とインフルエンザの罹患に関係があるともないとも言えない。サンプルサイズが大きくなれば異なる結果が出るかもしれない。
+```
+# 3章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+```
+
+# 4章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+# 5章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
+# 6章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 7章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 8章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 9章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 10章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 11章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 12章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 13章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+# 14章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
