@@ -10,7 +10,7 @@ max_values <- numeric(1000)
 # 操作を1000回繰り返す
 for (i in 1:1000) {
  # サイコロを3回降って最大値を取得
- max_values[i] <- max(sample(1:6, 3, replace = TRUE))
+ max_values[i] <- max(sample(1:6, 10, replace = TRUE))
 }
 
 # 最大値の平均を計算
@@ -40,7 +40,7 @@ max_values <- numeric(1000)
 # 操作を1000回繰り返す
 for (i in 1:1000) {
  # サイコロを3回降って最大値を取得
- max_values[i] <- max(rnorm(3))
+ max_values[i] <- max(rnorm(100))
 }
 
 # 最大値の平均を計算
@@ -72,7 +72,7 @@ max_values <- numeric(1000)
 # 操作を1000回繰り返す
 for (i in 1:1000) {
  # サイコロを3回降って最大値を取得
- max_values[i] <- max(rexp(3))
+ max_values[i] <- max(rexp(10))
 }
 
 # 最大値の平均を計算
@@ -102,7 +102,7 @@ max_values <- numeric(100)
 # 操作を1000回繰り返す
 for (i in 1:100) {
  # サイコロを3回降って最大値を取得
- max_values[i] <- max(rcauchy(3))
+ max_values[i] <- max(rcauchy(10))
 }
 
 # 最大値の平均を計算
