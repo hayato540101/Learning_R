@@ -1,5 +1,0 @@
-likemath <- scan("clipboard")
-scoremath <- scan("clipboard")
-plot(likemath, scoremath)
-res <- lm(scoremath ~ likemath)
-abline(res)

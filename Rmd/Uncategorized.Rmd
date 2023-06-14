@@ -1,0 +1,27 @@
+---
+title: "Animation of Major Probability Distributions"
+author: "TH"
+output:
+  html_document:
+    theme: darkly
+    toc: true
+    number_sections: true
+---
+
+```{r}
+library(ggplot2)
+library(gganimate)
+```
+$$
+f(x,y) = x^2 + y^2
+$$
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+x <- seq(-5, 5, length = 100)
+y <- seq(-5, 5, length = 100)
+z <- outer(x, y, function(x, y) x^2 + y^2)
+
+# 等高線の塗りつぶしプロットの作成
+filled.contour(x, y, z, main = "z = x^2 + y^2 Contour Plot")
+# filled.contour(x, y, z, color.palette = terrain.colors, main = "z = x^2 + y^2 Contour Plot")
+```
+

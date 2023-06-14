@@ -8,9 +8,15 @@ output:
     number_sections: true
 ---
 
-# 1章
+# 章
+
+```{r}
+library(styler)
+style_file("C:/Users/thyt/Learning/Learning_R/Rmd/Rで学ぶ確率統計学 多変量統計編/なんでも.R")
+```
 
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
 # 1-1
 print(paste(556*(9/16),556*(3/16),556*(3/16),556*(1/16)))
 
@@ -67,7 +73,7 @@ ggplot(data, aes(x = x, y = y)) +
  ggtitle("Chi-squared Distribution (df = 11)")
 ```
 
-# 2章
+# 章
 
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 # 2-1
@@ -109,40 +115,172 @@ chisq.test(vaccination, correct=FALSE)
 chisq.test(vaccination)
 # →イエーツの補正をした場合でも、しない場合でも有意水準5%で有意にはならない。H_0は棄却されない。よってワクチン接種とインフルエンザの罹患に関係があるともないとも言えない。サンプルサイズが大きくなれば異なる結果が出るかもしれない。
 ```
-# 3章
+
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 3-3
+
+# [,1]	Ozone	numeric	Ozone (ppb)
+# [,3]	Wind	numeric	Wind (mph)
+# A.風速が1mph上がるときオゾン量は-5.5509ppb変化する
+res <- lm(formula = Ozone ~ Wind, data = airquality)
+
+plot(airquality$Wind, airquality$Ozone)
+abline(res)
+summary(res)
+# A.風速が1mph上がると、オゾン量は5.5509ppb低下する
+
+# 3-4
+# dplyrパッケージを読み込む
+library(dplyr)
+
+
+# [, 1]	mpg	Miles/(US) gallon
+# [, 3]	disp	Displacement (cu.in.)←エンジンの排気量
+data <- select(mtcars, disp, mpg)
+
+# 散布図をプロット
+plot(data$disp, data$mpg, xlab = "disp", ylab = "mpg", main = "Scatter plot of mpg vs disp")
+
+# 回帰モデルを作成し、回帰直線をプロット
+res <- lm(mpg ~ disp, data = data)
+abline(res, col = "red")
+summary(res)
+# A.切片、dispともに有意である
+```
+
+# 章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 4-1
+women
+summary(women)
+res <- lm(height ~ weight, data = women)
+res2 <- lm(height ~ poly(weight, 2, raw = TRUE), data = women)
+summary(res)
+summary(res2)
+
+plot(women$weight, women$height)
+lines(women$weight, fitted(res))
+lines(women$weight, fitted(res2))
+lines(cars$speed, fitted(res), col = "blue") # 線のスタイルを点線に設定
+
+# 4-4
+
 
 ```
+# 章
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 5-1
+# 5-2
+# 5-3
+# 5-4
+# 5-5
+# 5-6
+# 5-7
+# 5-8
 
-# 4章
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
 ```
-# 5章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 6-1
+# 6-2
+# 6-3
+# 6-4
+# 6-5
+# 6-6
+# 6-7
+# 6-8
 ```
-# 6章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 7-1
+# 7-2
+# 7-3
+# 7-4
+# 7-5
+# 7-6
+# 7-7
+# 7-8
 ```
-# 7章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 8-1
+# 8-2
+# 8-3
+# 8-4
+# 8-5
+# 8-6
+# 8-7
+# 8-8
 ```
-# 8章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 9-1
+# 9-2
+# 9-3
+# 9-4
+# 9-5
+# 9-6
+# 9-7
+# 9-8
 ```
-# 9章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 10-1
+# 10-2
+# 10-3
+# 10-4
+# 10-5
+# 10-6
+# 10-7
+# 10-8
+
 ```
-# 10章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 11-1
+# 11-2
+# 11-3
+# 11-4
+# 11-5
+# 11-6
+# 11-7
+# 11-8
+
 ```
-# 11章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 12-1
+# 12-2
+# 12-3
+# 12-4
+# 12-5
+# 12-6
+# 12-7
+# 12-8
+
 ```
-# 12章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 13-1
+# 13-2
+# 13-3
+# 13-4
+# 13-5
+# 13-6
+# 13-7
+# 13-8
+
 ```
-# 13章
+# 章
 ```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# 14-1
+# 14-2
+# 14-3
+# 14-4
+# 14-5
+# 14-6
+# 14-7
+# 14-8
 ```
-# 14章
-```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+

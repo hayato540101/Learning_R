@@ -1,0 +1,539 @@
+---
+title: "Rで学ぶ確率統計学 多変量統計編"
+author: "T_"
+output:
+  html_document:
+    theme: darkly
+    toc: true
+    number_sections: true
+---
+
+library(styler)
+style_file("C:/Users/thyt/Learning/Learning_R/Rmd/Learning Probability and Statistics with R Multivariate Statistics/なんでも.R")
+
+- 目的：復習を兼ねてRmarkdownにまとめる
+
+# 章
+
+## 適合度検定
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+nankai <- data.frame(month = 1:12, frequency=c(0,2,0,0,0,0,0,2,1,1,1,5))
+
+barplot(height = nankai$frequency,
+        names.arg = nankai$month, xlab = "month", ylab = "frequency")
+
+chisq.test(nankai$frequency,p=rep(1/12,length=12))
+```
+
+$$結論　帰無仮説H_0:各々の月に地震が起きる確率が12分の1は棄却される。$$
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# accident_count 事故回数
+# year_count 該当する年の数
+
+df <- data.frame(accident_count = 0:8, year_count=c(1,6,6,8,5,7,0,1,0))
+m <- sum((0:8)*df$year_count)/sum(df$year_count)
+
+print(paste("最尤推定量λ:",m))
+
+```
+
+$$事故回数を8回以上と解釈した場合(自由度8)の検定$$
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+poisprob<-dpois(0:7,lambda=m)
+theory<-c(poisprob,1-sum(poisprob))
+chisq.test(df$year_count,p=theory)
+```
+
+$$9回以上の実現値を0と解釈した場合(自由度9)の検定$$
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+poisprob2<-dpois(0:8,lambda=m)
+theory2<-c(poisprob2,1-sum(poisprob2))
+years2<-c(df$year_count,0)
+
+chisq.test(years2,p=theory2)
+```
+
+$$χ二乗統計量の分布$$
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+N <- 1000
+p <- c(4,3,2,1)/10
+x <- rmultinom(N, size=10, prob=p)
+expmatrix <- rep(N*p,N)
+z <- x - expmatrix
+chisqval <- apply(z*z/expmatrix, 2, sum)
+hist(chisqval)
+```
+
+# 章 分割表の検定(2)
+
+-   メモ
+-   chisq.test(df) \# イエーツの補正あり
+-   chisq.test(df,correct=FALSE) \# イエーツの補正なし
+-   fisher.test(df) \# フィッシャーの正確検定
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+library(MASS)
+
+SmokeEx <- table(survey$Smoke, survey$Exer)
+
+chisq.test(SmokeEx)
+```
+
+## イエーツの補正有無でP値を比較
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+sb<-matrix(c(1085,703,55623,441239),2,2)
+chisq.test(sb,correct=FALSE)
+
+# correct=TRUE
+chisq.test(sb)
+```
+
+## 母比率の差の検定
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+prop.test(c(8,13),c(20,20))
+
+bluepen<-matrix(c(8,12,13,7),2,2)
+chisq.test(bluepen)
+```
+
+## フィッシャーの正確検定
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+fisher.test(bluepen)
+```
+
+## フィッシャーの正確検定の計算原理　SKIP
+
+## 独立性の検定が役に立つ場合
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+mrecall<-matrix(c(14,17,6,2),2,2)
+
+chisq.test(mrecall)
+chisq.test(mrecall,correct=FALSE)  # イエーツの補正なし
+
+fisher.test(mrecall)
+
+```
+
+## 残差分析
+
+メモ
+
+-   χ二乗検定→有意→標準化残差の絶対値の上側累積確率のチェック
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+MF <- matrix(c(482, 532, 303, 390, 30, 38, 29, 62), 4, 2,
+  dimnames = list(c("機械", "電気", "電子", "環境"), c("男性", "女性"))
+)
+
+res <- chisq.test(MF)
+res$stdres
+```
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# 正規分布の上側累積確率を計算
+p.value.matrix <- pnorm(abs(res$stdres),lower.tail=FALSE)*2
+
+round(p.value.matrix, 4)*100
+
+```
+# 章 単回帰
+
+## 近似直線の導出
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# speed(時速)、dist(停止までに走行する距離、ft)
+res<-lm(formula = dist~speed, data=cars)
+plot(cars)
+abline(res)
+
+summary(res)
+```
+
+## Rにおける決定係数
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+summary(res)
+
+# Call:
+# lm(formula = dist ~ speed, data = cars)
+# 
+# Residuals:
+#     Min      1Q  Median      3Q     Max 
+# -29.069  -9.525  -2.272   9.215  43.201 
+# 
+# Coefficients:
+#             Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -17.5791     6.7584  -2.601   0.0123 *  
+# speed         3.9324     0.4155   9.464 1.49e-12 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+# 
+# Residual standard error: 15.38 on 48 degrees of freedom
+# Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 
+# F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12
+```
+
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+# -1とすることで切片を0とする回帰になる
+res<-lm(formula = dist~speed - 1, data=cars)
+plot(cars,xlim=c(0,25))
+abline(res)
+
+summary(res)
+```
+
+## 説明変数、被説明変数のとり方による直線の違い
+メモ X⇒YとY⇒Xは等しくないし、フィッティングさせた直線の解釈も異なる。
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+# sampledata2.xlsxのTIMSS2011シートのV列
+likemath <- read.csv("likemath.csv",header=FALSE)
+scoremath <- read.csv("scoremath.csv",header=FALSE)
+plot(likemath$V1,scoremath$V1)
+res<-lm(scoremath$V1~likemath$V1)
+abline(res)
+summary(res)  # y = 679.1611 -3.1604x
+
+# 平均点が上がるほど数学が嫌いになる。と考え説明変数と独立変数を入れ替えた場合：
+res2<-lm(likemath$V1~scoremath$V1)
+summary(res2)
+
+# summaryより、
+# x = 125.87889 - 0.12297y
+# ⇔ y = (125.87889-X)/0.12297 = 1023.655 - 8.132065X
+abline(a=1023.655,b=-8.132065,lty="dotted")
+# ↑で引かれた直線は横方向の残差平方和を最小化する
+```
+## 外れ値の影響→SKIP
+
+
+# 章 赤池情報量基準によるモデル選択
+メモ：
+- 決定係数: 説明力のみ
+ - +汎用性の判断→AIC
+
+## cars再考
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+res<-lm(formula = dist~I(speed^2), data=cars)
+plot(cars)
+lines(cars$speed,fitted(res))
+summary(res)
+
+# 2次式
+res <- lm(formula = dist ~ speed + I(speed^2), data = cars)
+plot(cars)
+lines(cars$speed, fitted(res), lty = 2) # 線のスタイルを点線に設定
+summary(res)
+
+# 3次式
+res <- lm(formula = dist ~ speed + I(speed^2) + I(speed^3), data = cars)
+lines(cars$speed, fitted(res), col = "red") # 線のスタイルを点線に設定
+
+summary(res)
+
+# 4次式
+res <- lm(formula = dist ~ speed + I(speed^2) + I(speed^3) + I(speed^4), data = cars)
+lines(cars$speed, fitted(res), col = "blue") # 線のスタイルを点線に設定
+legend("topleft",legend = c("2次式", "3次式", "4次式"),
+  col = c("black", "red", "blue"), lty = c(1, 2)
+)
+
+summary(res)
+
+```
+
+## AIC(赤池情報量基準)
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+res1 <- lm(formula = dist ~ speed, data = cars)
+res2 <- lm(formula = dist ~ poly(speed, 2, raw = TRUE), data = cars)
+res3 <- lm(formula = dist ~ poly(speed, 3, raw = TRUE), data = cars)
+res4 <- lm(formula = dist ~ poly(speed, 4, raw = TRUE), data = cars)
+
+summary(res1)$r.squared; summary(res1)$adj.r.squared
+summary(res2)$r.squared; summary(res2)$adj.r.squared
+summary(res3)$r.squared; summary(res3)$adj.r.squared
+summary(res4)$r.squared; summary(res4)$adj.r.squared
+```
+次数をあげて推定パラメタを増やすと決定係数は改善できるがOverfittingに繋がる。  
+→どのように適切な推定パラメタを選ぶか？(モデル選択問題)  
+→AICを使う(AICが最小のものを選択する)  
+
+MLL: 最大対数尤度  
+モデルの当てはまりの良さ→AICを小さくする  
+パラメータ数Kの多さ→AICを大きくする
+
+\begin{align*}
+AIC = -2MLL+2k \\
+\end{align*}
+
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+AIC(res1,res2,res3,res4)
+
+res02 <- lm(formula = dist ~ poly(speed, 2, raw = TRUE)-1, data = cars)
+summary(res02)
+AIC(res02)
+
+```
+
+# 章 線形モデル
+これは直線の方程式 \(y = mx + b\) です。
+
+## 線形モデルの定式化
+次のように表せると仮定
+$$
+y_j = α + βx_j + ε_j,\quad j=1,2,...,n\\
+$$
+また、\(E[ε_j]=0,V[ε_j]=σ^2\)を満たすものとする。このようなモデルを線形単回帰モデルという。
+定理7.
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+```
+# 章 曲線へのあてはめ
+
+## lmを用いた曲線あてはめが上手く行く場合
+
+$$y=1+2sinx+3cos2x+ε,\quad ε \sim N(0,0.2)$$
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+x <- seq(0, 2 * pi, length = 100)
+
+y <- 1 + 2 * sin(x) + 3 * cos(2 * x) + rnorm(length(x), 0, 0.2)
+
+# データフレームを作成する
+data <- data.frame(x = x, y = y)
+
+plot(data$x, data$y)
+res <- lm(y ~ I(sin(x)) + I(cos(2 * x)))
+summary(res)
+lines(x, fitted(res))
+```
+
+$$y=f(x)=\frac{a}{1+b e^{-c x}}$$
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+diffusion_rate <- read.csv("PC普及率.csv", header = FALSE)
+colnames(diffusion_rate) <- c("year", "rate")
+
+plot(diffusion_rate$year, diffusion_rate$rate)
+
+year <- diffusion_rate$year
+rate <- diffusion_rate$rate
+
+year0 <- year - 1987
+
+res <- nls(rate ~ a / (1 + b * exp(-c * year0)), start = c(a = 80, b = 1, c = 1), trace = TRUE)
+summary(res)
+
+lines(year, fitted(res))
+```
+
+### 上手くいかない例
+memo algorithm=Newton法。誤差0のデータや二乗和の最小化以外のタスクには適用不可
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+### 1.素直にyear0を使うと上手くいかない
+# res <- nls(rate ~ a / (1 + b * exp(-c * year)), start = c(a = 80, b = 1, c = 1), trace = TRUE)
+
+# Error in nlsModel(formula, mf, start, wts, scaleOffset = scOff, nDcentral = nDcntr) :
+#  singular gradient matrix at initial parameter estimates
+
+### 2.初期値によっては収束しない
+# res <- nls(rate ~ a / (1 + b * exp(-c * year0)), start = c(a = 80, b = 0.1, c = 0.1), trace = TRUE)
+
+# Error in nls(rate ~ a/(1 + b * exp(-c * year0)), start = c(a = 80, b = 0.1,  : 
+#    step 因子 0.000488281 は 0.000976562 の 'minFactor' 以下に縮小しました 
+
+```
+## 変数変換+直線回帰
+### 両対数グラフ
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+city <- read.csv("population.csv", header = FALSE)
+city <- city$V1
+
+ord<-order(city,decreasing=TRUE)
+city_popl<-city[ord]
+rank<-1:21
+
+plot(rank, city_popl)
+plot(log(rank), log(city_popl))
+res<-lm(log(city_popl)~log(rank))
+summary(res)
+
+# log(city_popl) = 15.77573  -0.77548*log(rank)
+# city_popl = exp(15.77573) / rank^0.77548
+
+```
+### より複雑な例
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+
+plot(pressure$temperature,pressure$pressure)
+
+# セ氏→絶対温度T[K]
+abstemp<-pressure$temperature+273.15
+pres<-pressure$pressure
+
+# plot(log(abstemp),log(pres))
+
+model1<-lm(pres~abstemp)
+model2<-lm(pres~log(abstemp))
+model3<-lm(log(pres)~abstemp)
+model4<-lm(log(pres)~log(abstemp))
+model5<-lm(log(pres)~I(1/abstemp))
+
+AIC(model1,model2,model3,model4,model5)  # model5が最良
+summary(model5)
+# logpres = 18.27 - 7307/T
+
+plot(1/abstemp,log(pres))
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+```{r, fig.height = 7, fig.width = 7, fig.align = "center", fig.cap = "", dpi = 72}
+```
+
+# 章 
+## 
+
+
+# 章 
+
+
+# 章 
+
+
+# 章 
+
+
+# 章 
+
+
+# 章 
+## 
+## 
+## 
+## 
+## 
